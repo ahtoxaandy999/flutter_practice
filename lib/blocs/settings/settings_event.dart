@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_practice/domain/entities/ip_settings.dart';
-import 'package:flutter_practice/presentation/screens/settings/settings_state.dart';
+import 'package:flutter_practice/blocs/settings/settings_state.dart';
 
 abstract class SettingsEvent extends Equatable {
   const SettingsEvent();

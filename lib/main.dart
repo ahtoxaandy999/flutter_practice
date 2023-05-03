@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'bloc_observer.dart';
 import 'data/repositories/ip_settings_repository.dart';
 import 'domain/usecases/save_ip_settings_usecase.dart';
-import 'presentation/screens/settings/settings_bloc.dart';
+import 'blocs/settings/settings_bloc.dart';
 import 'presentation/screens/settings/settings_screen.dart';
 
 void main() async {

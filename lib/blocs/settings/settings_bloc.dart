@@ -4,8 +4,8 @@ import 'package:flutter_practice/data/repositories/ip_settings_repository.dart';
 import 'package:flutter_practice/domain/core/failures.dart';
 import 'package:flutter_practice/domain/entities/ip_settings.dart';
 import 'package:flutter_practice/domain/usecases/save_ip_settings_usecase.dart';
-import 'package:flutter_practice/presentation/screens/settings/settings_state.dart';
-import 'package:flutter_practice/presentation/screens/settings/settings_event.dart';
+import 'package:flutter_practice/blocs/settings/settings_state.dart';
+import 'package:flutter_practice/blocs/settings/settings_event.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SaveIpSettingsUseCase _saveIpSettingsUseCase;

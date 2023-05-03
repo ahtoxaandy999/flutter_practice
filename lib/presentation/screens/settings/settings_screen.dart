@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_practice/domain/entities/ip_settings.dart';
-import 'package:flutter_practice/presentation/screens/settings/settings_bloc.dart';
-import 'package:flutter_practice/presentation/screens/settings/settings_event.dart';
-import 'package:flutter_practice/presentation/screens/settings/settings_state.dart';
+import 'package:flutter_practice/blocs/settings/settings_bloc.dart';
+import 'package:flutter_practice/blocs/settings/settings_event.dart';
+import 'package:flutter_practice/blocs/settings/settings_state.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const String routeName = '/settings';
