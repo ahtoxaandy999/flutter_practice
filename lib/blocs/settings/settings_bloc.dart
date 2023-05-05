@@ -16,43 +16,41 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     required IpSettingsRepository ipSettingsRepository,
   })  : _saveIpSettingsUseCase = saveIpSettingsUseCase,
         _ipSettingsRepository = ipSettingsRepository,
-        super(SettingsState.initial());
+        super(SettingsState.initial()){
+          on<LoadIpSettings>(_onLoadIpSettings);
+        }
 
-  @override
-  Stream<SettingsState> mapEventToState(
-    SettingsEvent event,
-  ) async* {
-    yield* event.map(
-      loadIpSettings: (e) async* {
-        final IpSettings settings = await _ipSettingsRepository.loadIpSettings();
-        yield state.copyWith(
-          ipSettings: settings,
-        );
-      },
-      saveIpSettings: (e) async* {
-        yield state.copyWith(
-          isSubmitting: true,
-          saveFailureOrSuccessOption: none(),
-        );
-        final Either<ServerError, Unit> failureOrSuccess =
-            await _saveIpSettingsUseCase.execute(e.settings);
-        yield failureOrSuccess.fold(
-          (failure) => state.copyWith(
-            isSubmitting: false,
-            showErrorMessages: true,
-            saveFailureOrSuccessOption: some(left(failure)),
-          ),
-          (_) => state.copyWith(
-            isSubmitting: false,
-            saveFailureOrSuccessOption: some(right(unit)),
-          ),
-        );
-      },
-      ipSettingsSnackBarClosed: (e) async* {
-        yield state.copyWith(
-          saveFailureOrSuccessOption: none(),
-        );
-      },
-    );
+  Future<void> _onLoadIpSettings(
+    LoadIpSettings event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final IpSettings settings = await _ipSettingsRepository.loadIpSettings();
+    emit(state.copyWith(ipSettings: settings));
+  }
+
+  Future<void> _onSaveIpSettings(
+    SaveIpSettings event,
+    Emitter<SettingsState> emit,
+  ) async {
+    emit(state.copyWith(
+      isSubmitting: true,
+      saveFailureOrSuccessOption: none(),
+    ));
+
+    final Either<ServerError, Unit> failureOrSuccess =
+        await _saveIpSettingsUseCase.execute(event.settings);
+
+    emit(failureOrSuccess.fold(
+      (failure) => state.copyWith(
+        isSubmitting: false,
+        showErrorMessages: true,
+        saveFailureOrSuccessOption: some(left(failure)),
+      ),
+      (_) => state.copyWith(
+        isSubmitting: false,
+        showErrorMessages: false,
+        saveFailureOrSuccessOption: some(right(unit)),
+      ),
+    ));
   }
 }

@@ -146,7 +146,7 @@ packages:
     source: hosted
     version: "4.4.0"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       sha256: cfc915e6923fe5ce6e153b0723c753045de46de1b4d63771530504004a45fae0
@@ -177,6 +177,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  dart_ipify:
+    dependency: "direct main"
+    description:
+      name: dart_ipify
+      sha256: "3b70d589504126107e81ad0703d91394cc8e2039cb0a11ebd92b9b824a5e9561"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   dart_style:
     dependency: transitive
     description:
@@ -304,6 +312,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  html_character_entities:
+    dependency: transitive
+    description:
+      name: html_character_entities
+      sha256: "0eaf2acb67feeae8aba67c113aedbda71a57a36c38e3670fd677ec26e397faa3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+1"
+  http:
+    dependency: "direct main"
+    description:
+      name: http
+      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.13.6"
   http_multi_server:
     dependency: transitive
     description:
@@ -512,6 +536,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.2"
+  recursive_regex:
+    dependency: transitive
+    description:
+      name: recursive_regex
+      sha256: f7252e3d3dfd1665e594d9fe035eca6bc54139b1f2fee38256fa427ea41adc60
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -605,6 +637,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  speed_test_dart:
+    dependency: "direct main"
+    description:
+      name: speed_test_dart
+      sha256: "201ebc2b659985c6f795e42c3fe4677a47c639c0e12e4f3b10782c614e95a630"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4+1"
   stack_trace:
     dependency: transitive
     description:
@@ -637,6 +677,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  sync:
+    dependency: transitive
+    description:
+      name: sync
+      sha256: f2ebb89eac969abb02b498562a35c4da63d6843396c4fe81948cd06a76845fce
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   term_glyph:
     dependency: transitive
     description:
@@ -706,6 +754,14 @@ packages:
     description:
       name: xdg_directories
       sha256: ee1505df1426458f7f60aac270645098d318a8b4766d85fde75f76f2e21807d1
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  xml_parser:
+    dependency: transitive
+    description:
+      name: xml_parser
+      sha256: "5db4f4a1640320855caccad9c6de5a371c195ca36e703e977652e86f52424829"
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
