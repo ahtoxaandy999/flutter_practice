@@ -15,7 +15,10 @@ class SettingsState with _$SettingsState {
   }) = _SettingsState;
 
   factory SettingsState.initial() => SettingsState(
-        ipSettings: const IpSettings(ipAddress: '', subnetMask: '', router: ''),
+        ipSettings: const IpSettings(
+          ipAddress: '',
+          subnetMask: '',
+        ),
         showErrorMessages: false,
         isSubmitting: false,
         saveFailureOrSuccessOption: none(),

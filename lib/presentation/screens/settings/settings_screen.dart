@@ -17,13 +17,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   TextEditingController _ipAddressController = TextEditingController();
   TextEditingController _subnetMaskController = TextEditingController();
-  TextEditingController _routerController = TextEditingController();
 
   @override
   void dispose() {
     _ipAddressController.dispose();
     _subnetMaskController.dispose();
-    _routerController.dispose();
     super.dispose();
   }
 
@@ -31,7 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
       ),
       body: BlocConsumer<SettingsBloc, SettingsState>(
         listener: (context, state) {
@@ -48,60 +46,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (context, state) {
           _ipAddressController.text = state.ipSettings.ipAddress;
           _subnetMaskController.text = state.ipSettings.subnetMask;
-          _routerController.text = state.ipSettings.router;
 
           return Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
               child: ListView(
                 children: <Widget>[
                   TextFormField(
                     controller: _ipAddressController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'IP Address',
                     ),
-                    validator: (_) =>
-                        state.showErrorMessages && state.ipSettings.ipAddress.isEmpty
-                            ? 'IP Address is required'
-                            : null,
-                    onChanged: (value) => context.read<SettingsBloc>().add(
-                          SaveIpSettings(
-                            state.ipSettings.copyWith(ipAddress: value),
-                          ),
-                        ),
+                    validator: (_) => state.showErrorMessages &&
+                            state.ipSettings.ipAddress.isEmpty
+                        ? 'IP Address is required'
+                        : null,
                   ),
                   TextFormField(
                     controller: _subnetMaskController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Subnet Mask',
                     ),
                     validator: (_) => state.showErrorMessages &&
                             state.ipSettings.subnetMask.isEmpty
                         ? 'Subnet Mask is required'
                         : null,
-                    onChanged: (value) => context.read<SettingsBloc>().add(
-                          SaveIpSettings(
-                            state.ipSettings.copyWith(subnetMask: value),
-                          ),
-                        ),
                   ),
-                  TextFormField(
-                    controller: _routerController,
-                    decoration: InputDecoration(
-                      labelText: 'Router',
-                    ),
-                    validator: (_) =>
-                        state.showErrorMessages && state.ipSettings.router.isEmpty
-                            ? 'Router is required'
-                            : null,
-                    onChanged: (value) => context.read<SettingsBloc>().add(
-                          SaveIpSettings(
-                            state.ipSettings.copyWith(router: value),
-                          ),
-                        ),
-                  ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () {
                       context.read<SettingsBloc>().add(
@@ -109,8 +81,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           );
                     },
                     child: state.isSubmitting
-                        ? CircularProgressIndicator()
-                        : Text('Save'),
+                        ? const CircularProgressIndicator()
+                        : const Text('Save'),
                   ),
                 ],
               ),

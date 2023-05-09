@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_practice/data/repositories/ip_settings_repository.dart';
@@ -33,13 +35,19 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     SaveIpSettings event,
     Emitter<SettingsState> emit,
   ) async {
+    final IpSettings settings = event.settings;
+
     emit(state.copyWith(
       isSubmitting: true,
       saveFailureOrSuccessOption: none(),
     ));
 
     final Either<ServerError, Unit> failureOrSuccess =
-        await _saveIpSettingsUseCase.execute(event.settings);
+        await _saveIpSettingsUseCase.execute(settings);
+
+    if (failureOrSuccess.isRight()) {
+      await _ipSettingsRepository.saveIpSettings(event.settings);
+    }
 
     emit(failureOrSuccess.fold(
       (failure) => state.copyWith(
