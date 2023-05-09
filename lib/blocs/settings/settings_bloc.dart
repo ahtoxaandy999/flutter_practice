@@ -16,9 +16,10 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     required IpSettingsRepository ipSettingsRepository,
   })  : _saveIpSettingsUseCase = saveIpSettingsUseCase,
         _ipSettingsRepository = ipSettingsRepository,
-        super(SettingsState.initial()){
-          on<LoadIpSettings>(_onLoadIpSettings);
-        }
+        super(SettingsState.initial()) {
+    on<LoadIpSettings>(_onLoadIpSettings);
+    on<SaveIpSettings>(_onSaveIpSettings);
+  }
 
   Future<void> _onLoadIpSettings(
     LoadIpSettings event,

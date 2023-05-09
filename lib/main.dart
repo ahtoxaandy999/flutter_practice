@@ -7,6 +7,7 @@ import 'data/repositories/ip_settings_repository.dart';
 import 'domain/usecases/save_ip_settings_usecase.dart';
 import 'blocs/settings/settings_bloc.dart';
 import 'presentation/screens/settings/settings_screen.dart';
+import 'presentation/screens/status/status_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<SettingsBloc>(
           create: (context) => SettingsBloc(
-            saveIpSettingsUseCase: SaveIpSettingsUseCase(repository: ipSettingsRepository),
+            saveIpSettingsUseCase:
+                SaveIpSettingsUseCase(repository: ipSettingsRepository),
             ipSettingsRepository: ipSettingsRepository,
           ),
         ),
@@ -37,7 +39,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: SettingsScreen(),
+        home: const StatusScreen(),
+        routes: {
+          '/settings': (context) => SettingsScreen(),
+        },
       ),
     );
   }

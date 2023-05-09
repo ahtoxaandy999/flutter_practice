@@ -8,7 +8,11 @@ abstract class SettingsEvent extends Equatable {
   @override
   List<Object?> get props => [];
 
-  map({required Stream Function(dynamic e) loadIpSettings, required Stream<SettingsState> Function(dynamic e) saveIpSettings, required Stream<SettingsState> Function(dynamic e) ipSettingsSnackBarClosed}) {}
+  Stream<SettingsState> mapToState(
+      {required Stream<IpSettings> Function() loadIpSettings,
+      required Stream<SettingsState> Function(IpSettings) saveIpSettings,
+      required Stream<SettingsState> Function()
+          ipSettingsSnackBarClosed}) async* {}
 }
 
 class LoadIpSettings extends SettingsEvent {}
