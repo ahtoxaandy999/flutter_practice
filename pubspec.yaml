@@ -44,6 +44,7 @@ dependencies:
   collection: ^1.16.0
   get: ^4.6.5
   build_runner: ^2.3.3
+  regexed_validator: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:

@@ -119,18 +119,13 @@ class IpSettingsRepository {
     }
   }
 
-  Future<void> updateIpAndMask(IpSettings settings) async {
-    final process = await Process.start('ifconfig', [
-      'wlx7cc2c62ce171',
-      'inet',
-      settings.ipAddress,
-      'netmask',
-      settings.subnetMask
-    ]);
+  Future<void> updateIpAndMask(String ipAddress, String subnetMask) async {
+    final process = await Process.start('ifconfig',
+        ['wlx7cc2c62ce171', 'inet', ipAddress, 'netmask', subnetMask]);
     final output = await process.stdout.transform(utf8.decoder).toList();
     final errorOutput = await process.stderr.transform(utf8.decoder).toList();
 
-    if (process.exitCode != 0) {
+    if (await process.exitCode != 0) {
       throw Exception(
           'Failed to update IP address and mask. Error output: $errorOutput');
     }

@@ -4,6 +4,7 @@ import 'package:flutter_practice/domain/entities/ip_settings.dart';
 import 'package:flutter_practice/blocs/settings/settings_bloc.dart';
 import 'package:flutter_practice/blocs/settings/settings_event.dart';
 import 'package:flutter_practice/blocs/settings/settings_state.dart';
+import 'package:regexed_validator/regexed_validator.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const String routeName = '/settings';
@@ -25,6 +26,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(errorMessage),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           state.saveFailureOrSuccessOption.fold(
             () {},
             (either) => either.fold(
-              (failure) => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$failure')),
-              ),
+              (failure) => _showErrorDialog(failure.toString()),
               (_) => Navigator.pop(context),
             ),
           );
@@ -54,31 +73,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: ListView(
                 children: <Widget>[
                   TextFormField(
-                    controller: _ipAddressController,
+                    // controller: _ipAddressController,
                     decoration: const InputDecoration(
                       labelText: 'IP Address',
                     ),
-                    validator: (_) => state.showErrorMessages &&
-                            state.ipSettings.ipAddress.isEmpty
-                        ? 'IP Address is required'
-                        : null,
+                    onChanged: (value) {
+                      context
+                          .read<SettingsBloc>()
+                          .add(IpChanged(ipAddress: value));
+                    },
+                    validator: (value) {
+                      if (value == null || !validator.ip(value)) {
+                        return 'Please enter a valid IP';
+                      }
+                      return null;
+                    },
                   ),
                   TextFormField(
-                    controller: _subnetMaskController,
+                    // controller: _subnetMaskController,
                     decoration: const InputDecoration(
                       labelText: 'Subnet Mask',
                     ),
-                    validator: (_) => state.showErrorMessages &&
-                            state.ipSettings.subnetMask.isEmpty
-                        ? 'Subnet Mask is required'
-                        : null,
+                    onChanged: (value) {
+                      context
+                          .read<SettingsBloc>()
+                          .add(MaskChanged(subnetMask: value));
+                    },
+                    validator: (value) {
+                      if (value == null || !validator.ip(value)) {
+                        return 'Please enter a valid Mask';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<SettingsBloc>().add(
-                            SaveIpSettings(state.ipSettings),
-                          );
+                      if (_formKey.currentState!.validate()) {
+                        context.read<SettingsBloc>().add(
+                              SaveIpSettings(state.ipSettings),
+                            );
+                      }
                     },
                     child: state.isSubmitting
                         ? const CircularProgressIndicator()

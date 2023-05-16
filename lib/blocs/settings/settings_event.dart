@@ -25,3 +25,21 @@ class SaveIpSettings extends SettingsEvent {
   @override
   List<Object?> get props => [settings];
 }
+
+class IpChanged extends SettingsEvent {
+  final String ipAddress;
+
+  const IpChanged({required this.ipAddress});
+
+  @override
+  List<Object?> get props => [ipAddress];
+}
+
+class MaskChanged extends SettingsEvent {
+  final String subnetMask;
+
+  const MaskChanged({required this.subnetMask});
+
+  @override
+  List<Object?> get props => [subnetMask];
+}
