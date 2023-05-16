@@ -6,6 +6,8 @@ import 'package:flutter_practice/blocs/settings/settings_event.dart';
 import 'package:flutter_practice/blocs/settings/settings_state.dart';
 import 'package:regexed_validator/regexed_validator.dart';
 
+import '../../../domain/core/failures.dart';
+
 class SettingsScreen extends StatefulWidget {
   static const String routeName = '/settings';
 
@@ -26,7 +28,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
-  void _showErrorDialog(String errorMessage) {
+  void _showErrorDialog(Failure failure) {
+    final errorMessage = failure.message.toString();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -57,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           state.saveFailureOrSuccessOption.fold(
             () {},
             (either) => either.fold(
-              (failure) => _showErrorDialog(failure.toString()),
+              (failure) => _showErrorDialog(failure),
               (_) => Navigator.pop(context),
             ),
           );

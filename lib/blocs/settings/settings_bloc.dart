@@ -71,7 +71,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     } catch (e) {
       emit(state.copyWith(
         isSubmitting: false,
-        saveFailureOrSuccessOption: some(left(ServerError(e.toString()))),
+        saveFailureOrSuccessOption:
+            some(left(ServerError(message: e.toString()))),
       ));
     }
   }

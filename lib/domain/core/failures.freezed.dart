@@ -102,7 +102,7 @@ class __$$ServerErrorCopyWithImpl<$Res>
     Object? message = null,
   }) {
     return _then(_$ServerError(
-      null == message
+      message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
@@ -112,8 +112,8 @@ class __$$ServerErrorCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ServerError implements ServerError {
-  const _$ServerError(this.message);
+class _$ServerError extends ServerError {
+  const _$ServerError({required this.message}) : super._();
 
   @override
   final String message;
@@ -209,8 +209,9 @@ class _$ServerError implements ServerError {
   }
 }
 
-abstract class ServerError implements Failure {
-  const factory ServerError(final String message) = _$ServerError;
+abstract class ServerError extends Failure {
+  const factory ServerError({required final String message}) = _$ServerError;
+  const ServerError._() : super._();
 
   String get message;
   @JsonKey(ignore: true)
@@ -236,8 +237,8 @@ class __$$NetworkErrorCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$NetworkError implements NetworkError {
-  const _$NetworkError();
+class _$NetworkError extends NetworkError {
+  const _$NetworkError() : super._();
 
   @override
   String toString() {
@@ -322,8 +323,9 @@ class _$NetworkError implements NetworkError {
   }
 }
 
-abstract class NetworkError implements Failure {
+abstract class NetworkError extends Failure {
   const factory NetworkError() = _$NetworkError;
+  const NetworkError._() : super._();
 }
 
 /// @nodoc
@@ -349,7 +351,7 @@ class __$$ServerExceptionCopyWithImpl<$Res>
     Object? message = null,
   }) {
     return _then(_$ServerException(
-      null == message
+      message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
@@ -359,8 +361,8 @@ class __$$ServerExceptionCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ServerException implements ServerException {
-  const _$ServerException(this.message);
+class _$ServerException extends ServerException {
+  const _$ServerException({required this.message}) : super._();
 
   @override
   final String message;
@@ -456,8 +458,10 @@ class _$ServerException implements ServerException {
   }
 }
 
-abstract class ServerException implements Failure {
-  const factory ServerException(final String message) = _$ServerException;
+abstract class ServerException extends Failure {
+  const factory ServerException({required final String message}) =
+      _$ServerException;
+  const ServerException._() : super._();
 
   String get message;
   @JsonKey(ignore: true)
