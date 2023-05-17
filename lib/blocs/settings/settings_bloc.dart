@@ -5,6 +5,7 @@ import 'package:flutter_practice/domain/core/failures.dart';
 import 'package:flutter_practice/domain/entities/ip_settings.dart';
 import 'package:flutter_practice/blocs/settings/settings_state.dart';
 import 'package:flutter_practice/blocs/settings/settings_event.dart';
+import 'package:flutter_practice/utils/exceptions/logic_exception.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final IpSettingsRepository _ipSettingsRepository;
@@ -68,12 +69,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         isSubmitting: false,
         saveFailureOrSuccessOption: some(right(unit)),
       ));
-    } catch (e) {
+    } on NetworkChangeIPException catch (e) {
       emit(state.copyWith(
         isSubmitting: false,
         saveFailureOrSuccessOption:
             some(left(ServerError(message: e.toString()))),
       ));
+    } on Object {
+      rethrow;
     }
   }
 }

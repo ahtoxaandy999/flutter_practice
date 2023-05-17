@@ -28,6 +28,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
+  bool validateSubnetMask(String subnetMask) {
+    final octets = subnetMask.split('.');
+
+    if (octets.length != 4) {
+      return false;
+    }
+
+    for (final octet in octets) {
+      final value = int.tryParse(octet);
+
+      if (value == null ||
+          !(value == 0 ||
+              value == 128 ||
+              value == 192 ||
+              value == 224 ||
+              value == 240 ||
+              value == 248 ||
+              value == 252 ||
+              value == 255)) {
+        return false;
+      }
+
+      if (value != 255) {
+        final binary = value.toRadixString(2).padLeft(8, '0');
+
+        if (binary.indexOf('0') < binary.lastIndexOf('1')) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   void _showErrorDialog(Failure failure) {
     final errorMessage = failure.message.toString();
     showDialog(
@@ -103,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           .add(MaskChanged(subnetMask: value));
                     },
                     validator: (value) {
-                      if (value == null || !validator.ip(value)) {
+                      if (value == null || !validateSubnetMask(value)) {
                         return 'Please enter a valid Mask';
                       }
                       return null;

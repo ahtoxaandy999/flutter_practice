@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:dart_ipify/dart_ipify.dart';
+import 'package:flutter_practice/utils/exceptions/logic_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../domain/entities/ip_settings.dart';
@@ -120,14 +121,22 @@ class IpSettingsRepository {
   }
 
   Future<void> updateIpAndMask(String ipAddress, String subnetMask) async {
-    final process = await Process.start('ifconfig',
-        ['wlx7cc2c62ce171', 'inet', ipAddress, 'netmask', subnetMask]);
-    final output = await process.stdout.transform(utf8.decoder).toList();
-    final errorOutput = await process.stderr.transform(utf8.decoder).toList();
+    final networks = await scanNetworks();
+    final selectedNetwork =
+        networks.firstWhereOrNull((network) => network.isSelected);
 
-    if (await process.exitCode != 0) {
-      throw Exception(
-          'Failed to update IP address and mask. Error output: $errorOutput');
+    if (selectedNetwork != null) {
+      final device = selectedNetwork.device;
+      final command =
+          'sudo ifconfig $device inet $ipAddress netmask $subnetMask';
+      try {
+        final result = await Process.run('/bin/sh', ['-c', command]);
+      } on Object catch (e) {
+        throw NetworkChangeIPException(
+            'Failed to update IP address and mask. Error output: $e');
+      }
+    } else {
+      throw const NetworkChangeIPException('No network selected');
     }
   }
 }
