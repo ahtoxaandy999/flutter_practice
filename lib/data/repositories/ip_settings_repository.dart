@@ -31,13 +31,29 @@ class IpSettingsRepository {
     await _sharedPreferences.setString(_subnetMaskKey, settings.subnetMask);
   }
 
-  Future<IpSettings?> getIpSettings() async {
-    final ip = _sharedPreferences.getString(_ipKey);
-    final subnetMask = _sharedPreferences.getString(_subnetMaskKey);
-    if (ip == null || subnetMask == null) {
-      return null;
+  Future<IpSettings> getIpSettings() async {
+    final networks = await scanNetworks();
+    final selectedNetwork =
+        networks.firstWhereOrNull((network) => network.isSelected);
+
+    if (selectedNetwork != null) {
+      final device = selectedNetwork.device;
+      final result = await Process.run('ifconfig', [device]);
+      final output = result.stdout as String;
+      final regex = RegExp(
+          r'inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*mask\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})');
+      final match = regex.firstMatch(output);
+      if (match != null) {
+        final ipAddress = match.group(1);
+        final subnetMask = match.group(2);
+        return IpSettings(ipAddress: ipAddress!, subnetMask: subnetMask!);
+      } else {
+        throw NetworkChangeIPException(
+            'Failed to retrieve IP address and subnet mask');
+      }
+    } else {
+      throw const NetworkChangeIPException('No network selected');
     }
-    return IpSettings(ipAddress: ip, subnetMask: subnetMask);
   }
 
   Future<Network?> getConnectedNetwork() async {

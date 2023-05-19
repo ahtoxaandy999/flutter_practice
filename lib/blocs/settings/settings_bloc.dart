@@ -14,7 +14,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     required IpSettingsRepository ipSettingsRepository,
   })  : _ipSettingsRepository = ipSettingsRepository,
         super(SettingsState.initial()) {
-    on<LoadIpSettings>(_onLoadIpSettings);
+    on<GetIpSettings>(_onGetIpSettings);
     on<SaveIpSettings>(_onSaveIpSettings);
     on<IpChanged>(_onIpChanged);
     on<MaskChanged>(_onMaskChanged);
@@ -46,11 +46,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     ));
   }
 
-  Future<void> _onLoadIpSettings(
-    LoadIpSettings event,
+  Future<void> _onGetIpSettings(
+    GetIpSettings event,
     Emitter<SettingsState> emit,
   ) async {
-    final IpSettings settings = await _ipSettingsRepository.loadIpSettings();
+    final IpSettings settings = await _ipSettingsRepository.getIpSettings();
     emit(state.copyWith(ipSettings: settings));
   }
 

@@ -15,7 +15,7 @@ abstract class SettingsEvent extends Equatable {
           ipSettingsSnackBarClosed}) async* {}
 }
 
-class LoadIpSettings extends SettingsEvent {}
+class GetIpSettings extends SettingsEvent {}
 
 class SaveIpSettings extends SettingsEvent {
   final IpSettings settings;
