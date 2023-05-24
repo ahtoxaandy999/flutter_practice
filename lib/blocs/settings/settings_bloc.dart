@@ -51,8 +51,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     GetIpSettings event,
     Emitter<SettingsState> emit,
   ) async {
+    emit(state.copyWith(isSubmitting: true));
+    final isDHCP = await _ipSettingsRepository.isDHCP();
     final IpSettings settings = await _ipSettingsRepository.getIpSettings();
-    emit(state.copyWith(ipSettings: settings));
+    emit(state.copyWith(
+        ipSettings: settings, isManual: !isDHCP, isSubmitting: false));
   }
 
   Future<void> _onSaveIpSettings(
@@ -62,12 +65,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       emit(state.copyWith(isSubmitting: true));
 
-      final settings = state.ipSettings;
+      final settings = event.settings;
       await _ipSettingsRepository.updateIpAndMask(
           settings.ipAddress, settings.subnetMask);
 
       emit(state.copyWith(
+        ipSettings: settings,
         isSubmitting: false,
+        isManual: true,
         saveFailureOrSuccessOption: some(right(unit)),
       ));
     } on NetworkChangeIPException catch (e) {
@@ -92,6 +97,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       final IpSettings settings = await _ipSettingsRepository.getIpSettings();
       emit(state.copyWith(
         isSubmitting: false,
+        isManual: false,
         ipSettings: settings,
         saveFailureOrSuccessOption: some(right(unit)),
       ));

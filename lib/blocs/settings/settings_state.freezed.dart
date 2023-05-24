@@ -16,6 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$SettingsState {
+  bool get isManual => throw _privateConstructorUsedError;
   IpSettings get ipSettings => throw _privateConstructorUsedError;
   bool get showErrorMessages => throw _privateConstructorUsedError;
   bool get isSubmitting => throw _privateConstructorUsedError;
@@ -34,7 +35,8 @@ abstract class $SettingsStateCopyWith<$Res> {
       _$SettingsStateCopyWithImpl<$Res, SettingsState>;
   @useResult
   $Res call(
-      {IpSettings ipSettings,
+      {bool isManual,
+      IpSettings ipSettings,
       bool showErrorMessages,
       bool isSubmitting,
       Option<Either<Failure, Unit>> saveFailureOrSuccessOption});
@@ -53,12 +55,17 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? isManual = null,
     Object? ipSettings = null,
     Object? showErrorMessages = null,
     Object? isSubmitting = null,
     Object? saveFailureOrSuccessOption = null,
   }) {
     return _then(_value.copyWith(
+      isManual: null == isManual
+          ? _value.isManual
+          : isManual // ignore: cast_nullable_to_non_nullable
+              as bool,
       ipSettings: null == ipSettings
           ? _value.ipSettings
           : ipSettings // ignore: cast_nullable_to_non_nullable
@@ -88,7 +95,8 @@ abstract class _$$_SettingsStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {IpSettings ipSettings,
+      {bool isManual,
+      IpSettings ipSettings,
       bool showErrorMessages,
       bool isSubmitting,
       Option<Either<Failure, Unit>> saveFailureOrSuccessOption});
@@ -105,12 +113,17 @@ class __$$_SettingsStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? isManual = null,
     Object? ipSettings = null,
     Object? showErrorMessages = null,
     Object? isSubmitting = null,
     Object? saveFailureOrSuccessOption = null,
   }) {
     return _then(_$_SettingsState(
+      isManual: null == isManual
+          ? _value.isManual
+          : isManual // ignore: cast_nullable_to_non_nullable
+              as bool,
       ipSettings: null == ipSettings
           ? _value.ipSettings
           : ipSettings // ignore: cast_nullable_to_non_nullable
@@ -135,11 +148,14 @@ class __$$_SettingsStateCopyWithImpl<$Res>
 
 class _$_SettingsState implements _SettingsState {
   const _$_SettingsState(
-      {required this.ipSettings,
+      {required this.isManual,
+      required this.ipSettings,
       required this.showErrorMessages,
       required this.isSubmitting,
       required this.saveFailureOrSuccessOption});
 
+  @override
+  final bool isManual;
   @override
   final IpSettings ipSettings;
   @override
@@ -151,7 +167,7 @@ class _$_SettingsState implements _SettingsState {
 
   @override
   String toString() {
-    return 'SettingsState(ipSettings: $ipSettings, showErrorMessages: $showErrorMessages, isSubmitting: $isSubmitting, saveFailureOrSuccessOption: $saveFailureOrSuccessOption)';
+    return 'SettingsState(isManual: $isManual, ipSettings: $ipSettings, showErrorMessages: $showErrorMessages, isSubmitting: $isSubmitting, saveFailureOrSuccessOption: $saveFailureOrSuccessOption)';
   }
 
   @override
@@ -159,6 +175,8 @@ class _$_SettingsState implements _SettingsState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_SettingsState &&
+            (identical(other.isManual, isManual) ||
+                other.isManual == isManual) &&
             (identical(other.ipSettings, ipSettings) ||
                 other.ipSettings == ipSettings) &&
             (identical(other.showErrorMessages, showErrorMessages) ||
@@ -172,8 +190,8 @@ class _$_SettingsState implements _SettingsState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, ipSettings, showErrorMessages,
-      isSubmitting, saveFailureOrSuccessOption);
+  int get hashCode => Object.hash(runtimeType, isManual, ipSettings,
+      showErrorMessages, isSubmitting, saveFailureOrSuccessOption);
 
   @JsonKey(ignore: true)
   @override
@@ -184,12 +202,15 @@ class _$_SettingsState implements _SettingsState {
 
 abstract class _SettingsState implements SettingsState {
   const factory _SettingsState(
-      {required final IpSettings ipSettings,
+      {required final bool isManual,
+      required final IpSettings ipSettings,
       required final bool showErrorMessages,
       required final bool isSubmitting,
       required final Option<Either<Failure, Unit>>
           saveFailureOrSuccessOption}) = _$_SettingsState;
 
+  @override
+  bool get isManual;
   @override
   IpSettings get ipSettings;
   @override

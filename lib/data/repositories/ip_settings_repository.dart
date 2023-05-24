@@ -137,7 +137,7 @@ class IpSettingsRepository {
       final device = selectedNetwork.device;
       return device;
     } else {
-      throw const NetworkChangeIPException('No network selected');
+      return null;
     }
   }
 
@@ -145,7 +145,7 @@ class IpSettingsRepository {
     final device = await getWANDevice();
     final command = 'sudo ifconfig $device inet $ipAddress netmask $subnetMask';
     try {
-      final result = await Process.run('/bin/sh', ['-c', command]);
+      await Process.run('/bin/sh', ['-c', command]);
     } on Object catch (e) {
       throw NetworkChangeIPException(
           'Failed to update IP address and mask. Error output: $e');
@@ -161,6 +161,25 @@ class IpSettingsRepository {
       await Process.run('/bin/sh', ['-c', renewCommand]);
     } on Object catch (e) {
       throw NetworkChangeIPException('Failed to set DHCP. Error output: $e');
+    }
+  }
+
+  Future<bool> isDHCP() async {
+    final device = await getWANDevice();
+    final command = 'ip addr show $device';
+    try {
+      final result = await Process.run('/bin/sh', ['-c', command]);
+      final output = result.stdout as String;
+      final lines = LineSplitter.split(output);
+
+      for (final line in lines) {
+        if (line.contains('inet ') && line.contains(' dynamic ')) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
   }
 }

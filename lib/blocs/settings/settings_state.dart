@@ -8,6 +8,7 @@ part 'settings_state.freezed.dart';
 @freezed
 class SettingsState with _$SettingsState {
   const factory SettingsState({
+    required bool isManual,
     required IpSettings ipSettings,
     required bool showErrorMessages,
     required bool isSubmitting,
@@ -15,6 +16,7 @@ class SettingsState with _$SettingsState {
   }) = _SettingsState;
 
   factory SettingsState.initial() => SettingsState(
+        isManual: true,
         ipSettings: const IpSettings(
           ipAddress: '',
           subnetMask: '',

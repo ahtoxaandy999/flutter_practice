@@ -18,8 +18,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  TextEditingController _ipAddressController = TextEditingController();
-  TextEditingController _subnetMaskController = TextEditingController();
+  final TextEditingController _ipAddressController = TextEditingController();
+  final TextEditingController _subnetMaskController = TextEditingController();
 
   @override
   void dispose() {
@@ -110,35 +110,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: ListView(
                 children: <Widget>[
                   TextFormField(
-                    // controller: _ipAddressController,
+                    controller: _ipAddressController,
                     decoration: const InputDecoration(
                       labelText: 'IP Address',
                     ),
-                    onChanged: (value) {
-                      context
-                          .read<SettingsBloc>()
-                          .add(IpChanged(ipAddress: value));
-                    },
                     validator: (value) {
                       if (value == null || !validator.ip(value)) {
                         return 'Please enter a valid IP';
+                      } else if (value == state.ipSettings.ipAddress) {
+                        return 'Please enter a different IP';
                       }
                       return null;
                     },
                   ),
                   TextFormField(
-                    // controller: _subnetMaskController,
+                    controller: _subnetMaskController,
                     decoration: const InputDecoration(
                       labelText: 'Subnet Mask',
                     ),
-                    onChanged: (value) {
-                      context
-                          .read<SettingsBloc>()
-                          .add(MaskChanged(subnetMask: value));
-                    },
                     validator: (value) {
                       if (value == null || !validateSubnetMask(value)) {
                         return 'Please enter a valid Mask';
+                      } else if (value == state.ipSettings.subnetMask) {
+                        return 'Please enter a different Mask';
                       }
                       return null;
                     },
@@ -147,8 +141,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        final IpSettings ipSettings = IpSettings(
+                          ipAddress: _ipAddressController.text,
+                          subnetMask: _subnetMaskController.text,
+                        );
                         context.read<SettingsBloc>().add(
-                              SaveIpSettings(state.ipSettings),
+                              SaveIpSettings(ipSettings),
                             );
                       }
                     },

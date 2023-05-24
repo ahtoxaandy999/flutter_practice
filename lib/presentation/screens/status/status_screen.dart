@@ -8,8 +8,7 @@ import 'package:flutter_practice/blocs/settings/settings_state.dart';
 
 class StatusScreen extends StatefulWidget {
   static const String routeName = '/network_status';
-
-  const StatusScreen({Key? key}) : super(key: key);
+  const StatusScreen({super.key});
 
   @override
   _StatusScreenState createState() => _StatusScreenState();
@@ -25,49 +24,81 @@ class _StatusScreenState extends State<StatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Status'),
-      ),
-      body: BlocBuilder<SettingsBloc, SettingsState>(
-        buildWhen: (previous, current) =>
-            previous.ipSettings.ipAddress != current.ipSettings.ipAddress ||
-            previous.ipSettings.subnetMask != current.ipSettings.subnetMask,
-        builder: (context, state) {
-          if (state is SettingsState) {
-            final ipAddress = state.ipSettings.ipAddress;
-            final subnetMask = state.ipSettings.subnetMask;
-
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('IP Address:'),
-                  Text(ipAddress),
-                  const SizedBox(height: 16),
-                  const Text('Subnet Mask:'),
-                  Text(subnetMask),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/settings');
-                    },
-                    child: const Text('Manual'),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
+        appBar: AppBar(
+          title: const Text('Status'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BlocBuilder<SettingsBloc, SettingsState>(
+                buildWhen: (previous, current) =>
+                    previous.isManual != current.isManual,
+                builder: (context, state) => ToggleButtons(
+                  direction: Axis.vertical,
+                  isSelected: state.isManual ? [true, false] : [false, true],
+                  onPressed: (index) {
+                    if (index == 0) {
                       context.read<SettingsBloc>().add(SetDHCP());
-                    },
-                    child: const Text('DHCP'),
-                  ),
-                ],
+                    } else if (index == 1) {
+                      Navigator.pushNamed(context, '/settings');
+                    }
+                  },
+                  children: const [
+                    SizedBox(
+                      width: 200,
+                      child: Text(
+                        'DHCP',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 200,
+                      child: Text(
+                        'Manual',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          }
-          return const CircularProgressIndicator();
-        },
-      ),
-    );
+              const SizedBox(height: 16),
+              BlocBuilder<SettingsBloc, SettingsState>(
+                buildWhen: (previous, current) =>
+                    previous.ipSettings.ipAddress !=
+                    current.ipSettings.ipAddress,
+                builder: (context, state) {
+                  final ipAddress = state.ipSettings.ipAddress;
+
+                  return Text('IP Address: $ipAddress');
+                },
+              ),
+              const SizedBox(height: 16),
+              BlocBuilder<SettingsBloc, SettingsState>(
+                buildWhen: (previous, current) =>
+                    previous.ipSettings.subnetMask !=
+                    current.ipSettings.subnetMask,
+                builder: (context, state) {
+                  final subnetMask = state.ipSettings.subnetMask;
+
+                  return Text('Subnet Mask: $subnetMask');
+                },
+              ),
+              BlocBuilder<SettingsBloc, SettingsState>(
+                buildWhen: (previous, current) =>
+                    previous.isSubmitting != current.isSubmitting,
+                builder: (context, state) {
+                  return Visibility(
+                    visible: state.isSubmitting,
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ));
   }
 }
