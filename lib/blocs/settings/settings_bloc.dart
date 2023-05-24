@@ -18,6 +18,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<SaveIpSettings>(_onSaveIpSettings);
     on<IpChanged>(_onIpChanged);
     on<MaskChanged>(_onMaskChanged);
+    on<SetDHCP>(_onSetDHCP);
   }
 
   Future<void> _onMaskChanged(
@@ -67,6 +68,31 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
       emit(state.copyWith(
         isSubmitting: false,
+        saveFailureOrSuccessOption: some(right(unit)),
+      ));
+    } on NetworkChangeIPException catch (e) {
+      emit(state.copyWith(
+        isSubmitting: false,
+        saveFailureOrSuccessOption:
+            some(left(ServerError(message: e.toString()))),
+      ));
+    } on Object {
+      rethrow;
+    }
+  }
+
+  Future<void> _onSetDHCP(
+    SetDHCP event,
+    Emitter<SettingsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(isSubmitting: true));
+
+      await _ipSettingsRepository.setDHCP();
+      final IpSettings settings = await _ipSettingsRepository.getIpSettings();
+      emit(state.copyWith(
+        isSubmitting: false,
+        ipSettings: settings,
         saveFailureOrSuccessOption: some(right(unit)),
       ));
     } on NetworkChangeIPException catch (e) {

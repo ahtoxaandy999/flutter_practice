@@ -29,6 +29,9 @@ class _StatusScreenState extends State<StatusScreen> {
         title: const Text('Status'),
       ),
       body: BlocBuilder<SettingsBloc, SettingsState>(
+        buildWhen: (previous, current) =>
+            previous.ipSettings.ipAddress != current.ipSettings.ipAddress ||
+            previous.ipSettings.subnetMask != current.ipSettings.subnetMask,
         builder: (context, state) {
           if (state is SettingsState) {
             final ipAddress = state.ipSettings.ipAddress;
@@ -44,11 +47,19 @@ class _StatusScreenState extends State<StatusScreen> {
                   const SizedBox(height: 16),
                   const Text('Subnet Mask:'),
                   Text(subnetMask),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/settings');
                     },
                     child: const Text('Manual'),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<SettingsBloc>().add(SetDHCP());
+                    },
+                    child: const Text('DHCP'),
                   ),
                 ],
               ),

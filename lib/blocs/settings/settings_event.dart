@@ -43,3 +43,5 @@ class MaskChanged extends SettingsEvent {
   @override
   List<Object?> get props => [subnetMask];
 }
+
+class SetDHCP extends SettingsEvent {}

@@ -32,27 +32,20 @@ class IpSettingsRepository {
   }
 
   Future<IpSettings> getIpSettings() async {
-    final networks = await scanNetworks();
-    final selectedNetwork =
-        networks.firstWhereOrNull((network) => network.isSelected);
-
-    if (selectedNetwork != null) {
-      final device = selectedNetwork.device;
-      final result = await Process.run('ifconfig', [device]);
-      final output = result.stdout as String;
-      final regex = RegExp(
-          r'inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*mask\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})');
-      final match = regex.firstMatch(output);
-      if (match != null) {
-        final ipAddress = match.group(1);
-        final subnetMask = match.group(2);
-        return IpSettings(ipAddress: ipAddress!, subnetMask: subnetMask!);
-      } else {
-        throw NetworkChangeIPException(
-            'Failed to retrieve IP address and subnet mask');
-      }
+    final device = await getWANDevice();
+    final command = 'sudo ifconfig $device';
+    final result = await Process.run('bash', ['-c', command]);
+    final output = result.stdout as String;
+    final regex = RegExp(
+        r'inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*mask\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})');
+    final match = regex.firstMatch(output);
+    if (match != null) {
+      final ipAddress = match.group(1);
+      final subnetMask = match.group(2);
+      return IpSettings(ipAddress: ipAddress!, subnetMask: subnetMask!);
     } else {
-      throw const NetworkChangeIPException('No network selected');
+      throw const NetworkChangeIPException(
+          'Failed to retrieve IP address and subnet mask');
     }
   }
 
@@ -136,23 +129,38 @@ class IpSettingsRepository {
     }
   }
 
-  Future<void> updateIpAndMask(String ipAddress, String subnetMask) async {
+  Future<String?> getWANDevice() async {
     final networks = await scanNetworks();
     final selectedNetwork =
         networks.firstWhereOrNull((network) => network.isSelected);
-
     if (selectedNetwork != null) {
       final device = selectedNetwork.device;
-      final command =
-          'sudo ifconfig $device inet $ipAddress netmask $subnetMask';
-      try {
-        final result = await Process.run('/bin/sh', ['-c', command]);
-      } on Object catch (e) {
-        throw NetworkChangeIPException(
-            'Failed to update IP address and mask. Error output: $e');
-      }
+      return device;
     } else {
       throw const NetworkChangeIPException('No network selected');
+    }
+  }
+
+  Future<void> updateIpAndMask(String ipAddress, String subnetMask) async {
+    final device = await getWANDevice();
+    final command = 'sudo ifconfig $device inet $ipAddress netmask $subnetMask';
+    try {
+      final result = await Process.run('/bin/sh', ['-c', command]);
+    } on Object catch (e) {
+      throw NetworkChangeIPException(
+          'Failed to update IP address and mask. Error output: $e');
+    }
+  }
+
+  Future<void> setDHCP() async {
+    final device = await getWANDevice();
+    final releaseCommand = 'sudo dhclient -r $device';
+    final renewCommand = 'sudo dhclient $device';
+    try {
+      await Process.run('/bin/sh', ['-c', releaseCommand]);
+      await Process.run('/bin/sh', ['-c', renewCommand]);
+    } on Object catch (e) {
+      throw NetworkChangeIPException('Failed to set DHCP. Error output: $e');
     }
   }
 }
