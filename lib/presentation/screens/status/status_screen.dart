@@ -85,6 +85,16 @@ class _StatusScreenState extends State<StatusScreen> {
                   return Text('Subnet Mask: $subnetMask');
                 },
               ),
+              const SizedBox(height: 16),
+              BlocBuilder<SettingsBloc, SettingsState>(
+                buildWhen: (previous, current) =>
+                    previous.ipSettings.routerIp != current.ipSettings.routerIp,
+                builder: (context, state) {
+                  final routerIp = state.ipSettings.routerIp;
+
+                  return Text('Router IP: $routerIp');
+                },
+              ),
               BlocBuilder<SettingsBloc, SettingsState>(
                 buildWhen: (previous, current) =>
                     previous.isSubmitting != current.isSubmitting,

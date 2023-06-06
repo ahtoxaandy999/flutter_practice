@@ -9,7 +9,6 @@ abstract class SettingsEvent extends Equatable {
   List<Object?> get props => [];
 
   Stream<SettingsState> mapToState({
-    required Stream<IpSettings> Function() loadIpSettings,
     required Stream<SettingsState> Function(IpSettings) saveIpSettings,
   }) async* {}
 }

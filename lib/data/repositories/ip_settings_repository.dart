@@ -18,19 +18,6 @@ class IpSettingsRepository {
 
   IpSettingsRepository(this._sharedPreferences);
 
-  Future<IpSettings> loadIpSettings() async {
-    final String? ipAddress = _sharedPreferences.getString('ip_address');
-    final String? subnetMask = _sharedPreferences.getString('subnet_mask');
-    final IpSettings settings =
-        IpSettings(ipAddress: ipAddress ?? '', subnetMask: subnetMask ?? '');
-    return settings;
-  }
-
-  Future<void> saveIpSettings(IpSettings settings) async {
-    await _sharedPreferences.setString(_ipKey, settings.ipAddress);
-    await _sharedPreferences.setString(_subnetMaskKey, settings.subnetMask);
-  }
-
   Future<IpSettings> getIpSettings() async {
     final device = await getWANDevice();
     final command = 'sudo ifconfig $device';
@@ -42,11 +29,31 @@ class IpSettingsRepository {
     if (match != null) {
       final ipAddress = match.group(1);
       final subnetMask = match.group(2);
-      return IpSettings(ipAddress: ipAddress!, subnetMask: subnetMask!);
+      final gateway = await getGateway();
+      return IpSettings(
+          ipAddress: ipAddress!, subnetMask: subnetMask!, routerIp: gateway);
     } else {
       throw const NetworkChangeIPException(
           'Failed to retrieve IP address and subnet mask');
     }
+  }
+
+  Future<String> getGateway() async {
+    final device = await getWANDevice();
+    final command = 'ip route show dev $device';
+    final result = await Process.run('bash', ['-c', command]);
+    final output = result.stdout as String;
+    final lines = LineSplitter.split(output);
+    for (var line in lines) {
+      final parts = line.split(' ');
+      if (parts.contains('default')) {
+        final gatewayIndex = parts.indexOf('via');
+        if (gatewayIndex != -1 && gatewayIndex < parts.length - 1) {
+          return parts[gatewayIndex + 1];
+        }
+      }
+    }
+    throw Exception('Failed to retrieve gateway for device: $device');
   }
 
   Future<Network?> getConnectedNetwork() async {
@@ -141,14 +148,30 @@ class IpSettingsRepository {
     }
   }
 
-  Future<void> updateIpAndMask(String ipAddress, String subnetMask) async {
-    final device = await getWANDevice();
+  Future<void> updateIpAndMask(
+      String ipAddress, String subnetMask, String device) async {
     final command = 'sudo ifconfig $device inet $ipAddress netmask $subnetMask';
     try {
-      await Process.run('/bin/sh', ['-c', command]);
+      final result = await Process.run('/bin/sh', ['-c', command]);
+      final resultOut = result.stdout.toString().trim();
+      final resultErr = result.stderr.toString().trim();
+      print('updateIpAndMask $resultOut $resultErr');
     } on Object catch (e) {
       throw NetworkChangeIPException(
           'Failed to update IP address and mask. Error output: $e');
+    }
+  }
+
+  Future<void> updateGateway(String routerIp, String device) async {
+    final command = 'sudo ip route change default via $routerIp dev $device';
+    try {
+      final result = await Process.run('/bin/sh', ['-c', command]);
+      final resultOut = result.stdout.toString().trim();
+      final resultErr = result.stderr.toString().trim();
+      print('updateGateway $resultOut $resultErr');
+    } on Object catch (e) {
+      throw NetworkChangeIPException(
+          'Failed to update gateway. Error output: $e');
     }
   }
 

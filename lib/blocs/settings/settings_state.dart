@@ -20,6 +20,7 @@ class SettingsState with _$SettingsState {
         ipSettings: const IpSettings(
           ipAddress: '',
           subnetMask: '',
+          routerIp: '',
         ),
         showErrorMessages: false,
         isSubmitting: false,

@@ -51,11 +51,26 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     GetIpSettings event,
     Emitter<SettingsState> emit,
   ) async {
-    emit(state.copyWith(isSubmitting: true));
-    final isDHCP = await _ipSettingsRepository.isDHCP();
-    final IpSettings settings = await _ipSettingsRepository.getIpSettings();
-    emit(state.copyWith(
-        ipSettings: settings, isManual: !isDHCP, isSubmitting: false));
+    try {
+      emit(state.copyWith(isSubmitting: true));
+      final isDHCP = await _ipSettingsRepository.isDHCP();
+      final IpSettings settings = await _ipSettingsRepository.getIpSettings();
+      emit(state.copyWith(
+          ipSettings: settings, isManual: !isDHCP, isSubmitting: false));
+    } on NetworkChangeIPException catch (e) {
+      emit(state.copyWith(
+        isSubmitting: false,
+        saveFailureOrSuccessOption:
+            some(left(ServerError(message: e.toString()))),
+      ));
+    } on Object catch (e) {
+      emit(state.copyWith(
+        isSubmitting: false,
+        saveFailureOrSuccessOption:
+            some(left(ServerError(message: e.toString()))),
+      ));
+      rethrow;
+    }
   }
 
   Future<void> _onSaveIpSettings(
@@ -64,10 +79,13 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     try {
       emit(state.copyWith(isSubmitting: true));
-
       final settings = event.settings;
+      final device = await _ipSettingsRepository.getWANDevice();
+
       await _ipSettingsRepository.updateIpAndMask(
-          settings.ipAddress, settings.subnetMask);
+          settings.ipAddress, settings.subnetMask, device!);
+      print('routerIp: ${settings.routerIp}');
+      await _ipSettingsRepository.updateGateway(settings.routerIp, device);
 
       emit(state.copyWith(
         ipSettings: settings,
@@ -81,7 +99,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         saveFailureOrSuccessOption:
             some(left(ServerError(message: e.toString()))),
       ));
-    } on Object {
+    } on Object catch (e) {
+      emit(state.copyWith(
+        isSubmitting: false,
+        saveFailureOrSuccessOption:
+            some(left(ServerError(message: e.toString()))),
+      ));
       rethrow;
     }
   }
@@ -107,7 +130,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         saveFailureOrSuccessOption:
             some(left(ServerError(message: e.toString()))),
       ));
-    } on Object {
+    } on Object catch (e) {
+      emit(state.copyWith(
+        isSubmitting: false,
+        saveFailureOrSuccessOption:
+            some(left(ServerError(message: e.toString()))),
+      ));
       rethrow;
     }
   }

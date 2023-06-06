@@ -20,11 +20,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   final TextEditingController _ipAddressController = TextEditingController();
   final TextEditingController _subnetMaskController = TextEditingController();
+  final TextEditingController _routerIPController = TextEditingController();
 
   @override
   void dispose() {
     _ipAddressController.dispose();
     _subnetMaskController.dispose();
+    _routerIPController.dispose();
     super.dispose();
   }
 
@@ -90,6 +92,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: const Text('Settings'),
       ),
       body: BlocConsumer<SettingsBloc, SettingsState>(
+        listenWhen: (previous, current) =>
+            previous.ipSettings != current.ipSettings,
         listener: (context, state) {
           state.saveFailureOrSuccessOption.fold(
             () {},
@@ -102,6 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (context, state) {
           _ipAddressController.text = state.ipSettings.ipAddress;
           _subnetMaskController.text = state.ipSettings.subnetMask;
+          _routerIPController.text = state.ipSettings.routerIp;
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -138,12 +143,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _routerIPController,
+                    decoration: const InputDecoration(
+                      labelText: 'Router IP',
+                    ),
+                    validator: (value) => value == null || !validator.ip(value)
+                        ? 'Please enter a valid IP'
+                        : null,
+                  ),
+                  const SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         final IpSettings ipSettings = IpSettings(
                           ipAddress: _ipAddressController.text,
                           subnetMask: _subnetMaskController.text,
+                          routerIp: _routerIPController.text,
                         );
                         context.read<SettingsBloc>().add(
                               SaveIpSettings(ipSettings),
